@@ -14,10 +14,11 @@ services:
   keycloak:
       container_name: keycloak
       image: quay.io/keycloak/keycloak:21.1
-      env_file: .env
+      env_file: .env.prod
       ports:
       - "9090:8080"
-      command: start-dev
+      #command: start-dev
+      command: start --proxy edge
       networks:
       - keycloak-net
 
