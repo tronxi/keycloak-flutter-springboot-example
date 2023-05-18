@@ -3,12 +3,11 @@ import 'package:openidconnect/openidconnect.dart';
 
 class IdentityView extends StatelessWidget {
   final AuthorizationResponse identity;
-  const IdentityView(this.identity, {super.key});
+  final Map<String, dynamic> userInfo;
+  const IdentityView(this.identity, this.userInfo,{super.key});
 
   @override
   Widget build(BuildContext context) {
-    print(identity.refreshToken);
-    print(identity.accessToken);
     final captionTheme = Theme.of(context).textTheme.bodySmall;
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -26,28 +25,6 @@ class IdentityView extends StatelessWidget {
                 ),
                 Text(
                   identity.accessToken,
-                )
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "Identity Token:",
-                  style: captionTheme,
-                ),
-                Text(
-                  identity.idToken,
-                )
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "Token Type:",
-                  style: captionTheme,
-                ),
-                Text(
-                  identity.tokenType,
                 )
               ],
             ),
@@ -73,17 +50,17 @@ class IdentityView extends StatelessWidget {
                 )
               ],
             ),
-            Row(
+            ...userInfo.entries.map((entry) => Row(
               children: [
                 Text(
-                  "State:",
+                  "${entry.key}: ",
                   style: captionTheme,
                 ),
                 Text(
-                  identity.state ?? "Not Included",
+                  entry.value.toString(),
                 )
               ],
-            ),
+            )).toList(),
           ],
         ),
       ),

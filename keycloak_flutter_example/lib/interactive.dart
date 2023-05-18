@@ -14,6 +14,7 @@ class InteractivePage extends StatefulWidget {
 class InteractivePageState extends State<InteractivePage> {
   OpenIdConfiguration? discoveryDocument;
   AuthorizationResponse? identity;
+  Map<String, dynamic>? userInfo;
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class InteractivePageState extends State<InteractivePage> {
               try {
                 final response = await OpenIdConnect.authorizeInteractive(
                   context: context,
-                  title: "Login",
+                  title: "",
                   request: await InteractiveAuthorizationRequest.create(
                     clientId: defaultClientId,
                     redirectUrl: defaultRedirectUrl,
@@ -42,8 +43,13 @@ class InteractivePageState extends State<InteractivePage> {
                     useWebPopup: true,
                   ),
                 );
+                final userInfo = await OpenIdConnect.getUserInfo(
+                    request: UserInfoRequest(
+                        accessToken: response!.accessToken,
+                        configuration: discoveryDocument!));
                 setState(() {
                   identity = response;
+                  this.userInfo = userInfo;
                 });
               } on Exception {
                 setState(() {
@@ -65,11 +71,6 @@ class InteractivePageState extends State<InteractivePage> {
                           scopes: defaultscopes,
                           refreshToken: identity!.refreshToken!,
                           configuration: discoveryDocument!));
-                  final userInfo = await OpenIdConnect.getUserInfo(
-                      request: UserInfoRequest(
-                          accessToken: identity!.accessToken,
-                          configuration: discoveryDocument!));
-                  print(userInfo);
                   setState(() {
                     identity = response;
                   });
@@ -85,7 +86,7 @@ class InteractivePageState extends State<InteractivePage> {
           ),
           Visibility(
             visible: identity != null,
-            child: identity == null ? Container() : IdentityView(identity!),
+            child: identity == null ? Container() : IdentityView(identity!, userInfo!),
           ),
           Visibility(
             visible: identity != null,
@@ -95,7 +96,7 @@ class InteractivePageState extends State<InteractivePage> {
                   request: LogoutRequest(
                     idToken: identity!.idToken,
                     configuration: discoveryDocument!,
-                  ),
+                  )
                 );
                 setState(() {
                   identity = null;
