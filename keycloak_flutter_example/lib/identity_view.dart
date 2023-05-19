@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:openidconnect/openidconnect.dart';
+import 'dart:convert' show latin1;
+import 'dart:convert' show utf8;
 
 class IdentityView extends StatelessWidget {
   final AuthorizationResponse identity;
@@ -57,7 +59,7 @@ class IdentityView extends StatelessWidget {
                   style: captionTheme,
                 ),
                 Text(
-                  entry.value.toString(),
+                  utf8.decode(latin1.encode(entry.value.toString()))
                 )
               ],
             )).toList(),
